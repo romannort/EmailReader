@@ -80,7 +80,27 @@ public class AccountDataDialog extends javax.swing.JDialog {
      */
     private void SaveChanges()
     {
+        accountData.Login = this.tbServerLogin.getText();
+        accountData.Password = this.tpPassword.getPassword().toString();
+        accountData.PasswordConfirmation = this.tpPasswordConfirmation.getPassword().toString();
+        accountData.HostOut.Host = this.tbSmtpHost.getText();
+        accountData.HostOut.Port = this.tbSmtpPort.getText();
+        accountData.HostOut.Ssl = this.cbSmtpSsl.isEnabled();
         
+        if (this.rbImap.isEnabled())
+        {
+            accountData.HostIn.Protocl = Protocol.IMAP;
+            accountData.HostIn.Host = this.tbImapHost.getText();
+            accountData.HostIn.Port = this.tbImapPort.getText();
+            accountData.HostIn.Ssl = this.cbImapSsl.isEnabled();
+        }
+        else
+        {
+            accountData.HostIn.Protocl = Protocol.POP3;
+            accountData.HostIn.Host = this.tbPop3Host.getText();
+            accountData.HostIn.Port = this.tbPop3Port.getText();
+            accountData.HostIn.Ssl = this.cbPop3Ssl.isEnabled();
+        }
     }
     
     /**
@@ -123,8 +143,18 @@ public class AccountDataDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnOk.setText("Ok");
+        btnOk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOkActionPerformed(evt);
+            }
+        });
 
         btnCancel.setText("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         lblServerLogin.setText("Server Login");
 
@@ -264,6 +294,17 @@ public class AccountDataDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
+        // TODO add your handling code here:
+        SaveChanges();
+        this.dispose();
+    }//GEN-LAST:event_btnOkActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments

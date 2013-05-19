@@ -6,6 +6,11 @@ package EmailReader;
  */
 public class AccountData {
     
+    /**
+     * Current active account
+     */
+    public static AccountData ActiveAccount;
+    
     public String Login;
     
     public String Password;
@@ -28,4 +33,10 @@ public class AccountData {
         HostOut = new HostConnection();
     }
     
+    
+    @Override
+    public String toString()
+    {
+        return this.Login;
+    }
 }
