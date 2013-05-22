@@ -19,6 +19,7 @@ public class AccountDataDialog extends javax.swing.JDialog {
      */
     private AccountData accountData;
     
+    private boolean result = true;
     
     /** Edits existed account
      * 
@@ -32,6 +33,11 @@ public class AccountDataDialog extends javax.swing.JDialog {
         
         this.accountData = accountData;
         PopulateFields();
+    }
+    
+    public boolean GetResult()
+    {
+        return result;
     }
     
     /**
@@ -303,6 +309,7 @@ public class AccountDataDialog extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
+        result = false;
         this.dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 

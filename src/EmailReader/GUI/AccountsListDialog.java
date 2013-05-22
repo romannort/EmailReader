@@ -17,39 +17,40 @@ import javax.swing.DefaultListModel;
 public class AccountsListDialog extends javax.swing.JDialog {
 
     /**
-     * 
+     *
      */
     private DefaultListModel<AccountData> accounts;
-    
     private AccountData selectedAccount;
-    
+    private Frame parent;
     /**
      * Creates new form AccountsListDialog
      */
     public AccountsListDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        accounts = new DefaultListModel<>();
+        this.parent = parent;
     }
 
     /**
      * Creates new form AccountsListDialog
      */
     public AccountsListDialog(List<AccountData> accounts, Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
+//        super(parent, modal);
+//        initComponents();
+//        this.accounts = new DefaultListModel<>();
+        this(parent, modal);
         InitialiseListModel(accounts);
         this.lstAccounts.setModel(this.accounts);
     }
-    
-    
-    private void InitialiseListModel(List<AccountData> accounts)
-    {
+
+    private void InitialiseListModel(List<AccountData> accounts) {
         for (Iterator<AccountData> it = accounts.iterator(); it.hasNext();) {
             AccountData ad = it.next();
             this.accounts.addElement(ad);
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialise the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -70,12 +71,12 @@ public class AccountsListDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lstAccounts.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         lstAccounts.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstAccounts.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstAccountsValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstAccounts);
 
         btnAdd.setText("Add");
@@ -87,9 +88,19 @@ public class AccountsListDialog extends javax.swing.JDialog {
 
         btnEdit.setText("Edit");
         btnEdit.setEnabled(false);
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
         btnDelete.setEnabled(false);
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnOk.setText("OK");
         btnOk.addActionListener(new java.awt.event.ActionListener() {
@@ -159,11 +170,57 @@ public class AccountsListDialog extends javax.swing.JDialog {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         AccountData newAccount = new AccountData();
-        accounts.addElement(newAccount);
+        AccountDataDialog newDialog = new AccountDataDialog(newAccount, parent, true);
+        newDialog.setVisible(true);
+        if (newDialog.GetResult()){
+            accounts.addElement(newAccount);
+            UpdateList();
+        }
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void lstAccountsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstAccountsValueChanged
+        // See if this is a listbox selection and the
+        // event stream has settled
+        if (evt.getSource() == lstAccounts && !evt.getValueIsAdjusting()) {
+            this.selectedAccount = (AccountData)lstAccounts.getSelectedValue();
+        }
+        ToggleEditButtons();
+    }//GEN-LAST:event_lstAccountsValueChanged
+
+    private void UpdateList()
+    {
+        lstAccounts.setModel(accounts);
+        this.jScrollPane1.revalidate();
+        this.jScrollPane1.repaint();
+    }
+    
+    private void ToggleEditButtons()
+    {
+        boolean value = selectedAccount != null;
+        btnEdit.setEnabled(value);
+        btnDelete.setEnabled(value);
+        btnActive.setEnabled(value);
+    }
     
     
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        AccountData copy = selectedAccount;
+        AccountDataDialog dialog = new AccountDataDialog(copy, parent, true);
+        dialog.setVisible(true);
+        if (dialog.GetResult()){
+            selectedAccount = copy;
+            UpdateList();                    
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        accounts.removeElement(selectedAccount);
+        selectedAccount = null;
+        UpdateList();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
