@@ -7,6 +7,8 @@ package EmailReader.GUI;
 import EmailReader.AccountData;
 import EmailReader.Commands.ICommand;
 import EmailReader.Commands.ShowAccountsListCommand;
+import EmailReader.DateFormatter;
+import EmailReader.MessageAddressFormatter;
 import EmailReader.MessagesProvider;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -20,12 +22,18 @@ import javax.swing.table.TableModel;
 public class MainForm extends javax.swing.JFrame {
 
     private Message[] messages;
+    //private List<MessageView> messages;
+    private MessagesProvider provider;
 
     /**
      * Creates new form MainForm
      */
     public MainForm() {
         initComponents();
+        // We must set ActiveAccount first
+        EditAccounts();
+        provider = new MessagesProvider();
+        //messages = new ArrayList<MessageView>();
         UpdateView();
     }
 
@@ -45,6 +53,7 @@ public class MainForm extends javax.swing.JFrame {
         mbMainFormMenu = new javax.swing.JMenuBar();
         mtFile = new javax.swing.JMenu();
         mtRefresh = new javax.swing.JMenuItem();
+        mtCloseConnection = new javax.swing.JMenuItem();
         mtEdit = new javax.swing.JMenu();
         mtAccounts = new javax.swing.JMenuItem();
 
@@ -94,6 +103,14 @@ public class MainForm extends javax.swing.JFrame {
         });
         mtFile.add(mtRefresh);
 
+        mtCloseConnection.setText("Close Connection");
+        mtCloseConnection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mtCloseConnectionActionPerformed(evt);
+            }
+        });
+        mtFile.add(mtCloseConnection);
+
         mbMainFormMenu.add(mtFile);
 
         mtEdit.setText("Edit");
@@ -138,26 +155,28 @@ public class MainForm extends javax.swing.JFrame {
         EditAccounts();
     }//GEN-LAST:event_mtAccountsActionPerformed
 
-    private void EditAccounts()
-    {
+    private void EditAccounts() {
         ICommand accountSettings = new ShowAccountsListCommand();
         accountSettings.Execute();
     }
-    
+
     private void mtRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtRefreshActionPerformed
         // TODO add your handling code here:
         UpdateView();
     }//GEN-LAST:event_mtRefreshActionPerformed
 
+    private void mtCloseConnectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtCloseConnectionActionPerformed
+        provider.CloseConnection();
+    }//GEN-LAST:event_mtCloseConnectionActionPerformed
+
     private void UpdateView() {
-        
-        if (AccountData.ActiveAccount == null){
+
+        if (AccountData.ActiveAccount == null) {
             EditAccounts();
         }
-        MessagesProvider provider = new MessagesProvider();
         messages = provider.GetMessages();
+        //GenerateViews(messages);
         TableModel tabModel = new AbstractTableModel() {
-            
             @Override
             public String getColumnName(int col) {
                 switch (col) {
@@ -190,11 +209,11 @@ public class MainForm extends javax.swing.JFrame {
                     if (row >= 0 && row < getRowCount()) {
                         switch (col) {
                             case 0:
-                                return messages[row].getReceivedDate();
+                                return DateFormatter.Format(messages[row].getReceivedDate());
                             case 1:
-                                return messages[row].getFrom();
+                                return MessageAddressFormatter.Format(messages[row].getFrom()[0]);
                             case 2:
-                                return messages[row].getRecipients(Message.RecipientType.TO);
+                                return MessageAddressFormatter.Format(messages[row].getRecipients(Message.RecipientType.TO)[0]);
                             case 3:
                                 return messages[row].getSubject();
                             default:
@@ -217,6 +236,13 @@ public class MainForm extends javax.swing.JFrame {
         };
         tabMessages.setModel(tabModel);
     }
+
+//    private void GenerateViews(Message[] messages) {
+//        messages = new ArrayList<>();
+//        for (int i = 0; i < messages.length; ++i) {
+//            messages.add(new MessageView(messages[i]));
+//        }
+//    }
 
     /**
      * @param args the command line arguments
@@ -257,6 +283,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane ScrollPaneTree;
     private javax.swing.JMenuBar mbMainFormMenu;
     private javax.swing.JMenuItem mtAccounts;
+    private javax.swing.JMenuItem mtCloseConnection;
     private javax.swing.JMenu mtEdit;
     private javax.swing.JMenu mtFile;
     private javax.swing.JMenuItem mtRefresh;

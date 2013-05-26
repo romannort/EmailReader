@@ -4,8 +4,11 @@
  */
 package EmailReader;
 
+import com.sun.mail.imap.IMAPMessage;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.Authenticator;
@@ -17,6 +20,10 @@ import javax.mail.Authenticator;
 public class MessagesProvider {
 
     private AccountData account;
+
+    private Folder currentFolder;
+    
+    private Store currentStore;
     
     /**
      *
@@ -69,8 +76,18 @@ public class MessagesProvider {
             Message[] messages = inbox.getMessages();
             // Close the connection 
             // but don't remove the messages from the server
-            inbox.close(false);
-            store.close();
+            
+            //inbox.close(false);            
+            //store.close();
+            
+            FetchProfile fp = new FetchProfile();
+            fp.add(FetchProfile.Item.ENVELOPE);
+            fp.add("X-mailer");
+            inbox.fetch(messages, fp);
+            
+            currentFolder = inbox;
+            currentStore = store;
+            
             return messages;
 
         } catch (Exception ex) {
@@ -79,6 +96,16 @@ public class MessagesProvider {
         return null;
     }
 
+    public void CloseConnection()
+    {
+        try {
+            currentFolder.close(true);
+            currentStore.close();
+        } catch (MessagingException ex) {
+            Logger.getLogger(MessagesProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private static void WorkingWithImap() {
 
         final String username = "giantrog@gmail.com";

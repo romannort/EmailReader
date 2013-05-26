@@ -36,6 +36,9 @@ public class ShowAccountsListCommand implements ICommand {
         if (accountsDialog.getResult()) {
             result = true;
             accounts = accountsDialog.GetAccounts();
+            if (AccountData.ActiveAccount == null && accounts.size() == 1){
+                AccountData.ActiveAccount = accounts.get(0);
+            }
             WriteAccounts();
         }
         result = false;

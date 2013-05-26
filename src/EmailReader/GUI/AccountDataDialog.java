@@ -90,8 +90,9 @@ public class AccountDataDialog extends javax.swing.JDialog {
      */
     private void SaveChanges() {
         accountData.Login = this.tbServerLogin.getText();
-        accountData.Password = this.tpPassword.getPassword().toString();
-        accountData.PasswordConfirmation = this.tpPasswordConfirmation.getPassword().toString();
+        accountData.Password = new String(this.tpPassword.getPassword());
+        //char[] pass = this.tpPasswordConfirmation.getPassword();
+        //accountData.Password = new String(pass);
         accountData.HostOut.Host = this.tbSmtpHost.getText();
         accountData.HostOut.Port = this.tbSmtpPort.getText();
         accountData.HostOut.Ssl = this.cbSmtpSsl.isSelected();
