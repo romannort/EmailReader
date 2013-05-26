@@ -6,6 +6,8 @@ package EmailReader.GUI;
 
 import EmailReader.AccountData;
 import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -22,6 +24,7 @@ public class AccountsListDialog extends javax.swing.JDialog {
     private DefaultListModel<AccountData> accounts;
     private AccountData selectedAccount;
     private Frame parent;
+    private boolean result;
     /**
      * Creates new form AccountsListDialog
      */
@@ -36,14 +39,20 @@ public class AccountsListDialog extends javax.swing.JDialog {
      * Creates new form AccountsListDialog
      */
     public AccountsListDialog(List<AccountData> accounts, Frame parent, boolean modal) {
-//        super(parent, modal);
-//        initComponents();
-//        this.accounts = new DefaultListModel<>();
         this(parent, modal);
         InitialiseListModel(accounts);
         this.lstAccounts.setModel(this.accounts);
     }
 
+    public boolean getResult(){
+        return result;
+    }
+    
+    public List<AccountData> GetAccounts()
+    {
+        return (List<AccountData>)(List<?>)(new ArrayList<>(Arrays.asList(accounts.toArray())));
+    }
+    
     private void InitialiseListModel(List<AccountData> accounts) {
         for (Iterator<AccountData> it = accounts.iterator(); it.hasNext();) {
             AccountData ad = it.next();
@@ -110,6 +119,11 @@ public class AccountsListDialog extends javax.swing.JDialog {
         });
 
         btnCancel.setText("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         btnActive.setText("Active");
         btnActive.setEnabled(false);
@@ -164,7 +178,7 @@ public class AccountsListDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-
+        result = true;
         this.dispose();
     }//GEN-LAST:event_btnOkActionPerformed
 
@@ -220,6 +234,11 @@ public class AccountsListDialog extends javax.swing.JDialog {
         selectedAccount = null;
         UpdateList();
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        result = false;
+        this.dispose();        
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments

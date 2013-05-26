@@ -4,11 +4,21 @@
  */
 package EmailReader.GUI;
 
+import EmailReader.Commands.ICommand;
+import EmailReader.Commands.ShowAccountsListCommand;
+import EmailReader.MessagesProvider;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Roman Nort
  */
 public class MainForm extends javax.swing.JFrame {
+
+    private Message[] messages;
 
     /**
      * Creates new form MainForm
@@ -26,35 +36,74 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        ScrollPaneTree = new javax.swing.JScrollPane();
+        trFolders = new javax.swing.JTree();
+        ScrollPaneTable = new javax.swing.JScrollPane();
+        tabMessages = new javax.swing.JTable();
         mbMainFormMenu = new javax.swing.JMenuBar();
         mtFile = new javax.swing.JMenu();
+        mtRefresh = new javax.swing.JMenuItem();
         mtEdit = new javax.swing.JMenu();
+        mtAccounts = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(795, 490));
 
-        jScrollPane1.setViewportView(jTree1);
+        ScrollPaneTree.setViewportView(trFolders);
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        tabMessages.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Time", "From", "To", "Subject"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
-        jScrollPane2.setViewportView(jList1);
-
-        jScrollPane3.setViewportView(jTextPane1);
+        tabMessages.getTableHeader().setReorderingAllowed(false);
+        ScrollPaneTable.setViewportView(tabMessages);
 
         mbMainFormMenu.setName("mbMainFormMenu"); // NOI18N
 
         mtFile.setText("File");
+
+        mtRefresh.setText("Refresh");
+        mtRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mtRefreshActionPerformed(evt);
+            }
+        });
+        mtFile.add(mtRefresh);
+
         mbMainFormMenu.add(mtFile);
 
         mtEdit.setText("Edit");
+
+        mtAccounts.setText("Accounts");
+        mtAccounts.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mtAccountsActionPerformed(evt);
+            }
+        });
+        mtEdit.add(mtAccounts);
+
         mbMainFormMenu.add(mtEdit);
 
         setJMenuBar(mbMainFormMenu);
@@ -65,11 +114,9 @@ public class MainForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
+                .addComponent(ScrollPaneTree, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -77,16 +124,88 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3)))
+                    .addComponent(ScrollPaneTree, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
+                    .addComponent(ScrollPaneTable))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void mtAccountsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtAccountsActionPerformed
+        // TODO add your handling code here:
+        ICommand accountSettings = new ShowAccountsListCommand();
+        accountSettings.Execute();
+    }//GEN-LAST:event_mtAccountsActionPerformed
+
+    private void mtRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtRefreshActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mtRefreshActionPerformed
+
+    private void UpdateView() {
+        MessagesProvider provider = new MessagesProvider();
+        messages = provider.GetMessages();
+        TableModel tabModel = new AbstractTableModel() {
+            
+            @Override
+            public String getColumnName(int col) {
+                switch (col) {
+                    case 0:
+                        return "Date";
+                    case 1:
+                        return "From";
+                    case 2:
+                        return "To";
+                    case 3:
+                        return "Subject";
+                    default:
+                        return "";
+                }
+            }
+
+            @Override
+            public int getRowCount() {
+                return messages.length;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 4;
+            }
+
+            @Override
+            public Object getValueAt(int row, int col) {
+                try {
+                    if (row >= 0 && row < getRowCount()) {
+                        switch (col) {
+                            case 0:
+                                return messages[row].getReceivedDate();
+                            case 1:
+                                return messages[row].getFrom();
+                            case 2:
+                                return messages[row].getRecipients(Message.RecipientType.TO);
+                            case 3:
+                                return messages[row].getSubject();
+                            default:
+                                return "";
+                        }
+                    }
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                return "";
+            }
+
+            /**
+             * All cells are immutable.
+             */
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
+        };
+        tabMessages.setModel(tabModel);
+    }
 
     /**
      * @param args the command line arguments
@@ -123,14 +242,14 @@ public class MainForm extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList jList1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTree jTree1;
+    private javax.swing.JScrollPane ScrollPaneTable;
+    private javax.swing.JScrollPane ScrollPaneTree;
     private javax.swing.JMenuBar mbMainFormMenu;
+    private javax.swing.JMenuItem mtAccounts;
     private javax.swing.JMenu mtEdit;
     private javax.swing.JMenu mtFile;
+    private javax.swing.JMenuItem mtRefresh;
+    private javax.swing.JTable tabMessages;
+    private javax.swing.JTree trFolders;
     // End of variables declaration//GEN-END:variables
 }

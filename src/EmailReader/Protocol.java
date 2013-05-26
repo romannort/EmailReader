@@ -8,7 +8,7 @@ package EmailReader;
  *
  * @author Roman Nort
  */
-public class Protocol
+public class Protocol implements java.io.Serializable
 {
     public static String POP3 = "pop3";
     

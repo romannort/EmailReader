@@ -8,9 +8,9 @@ package EmailReader;
  *
  * @author Roman Nort
  */
-public class HostConnection {
-    
-       
+public class HostConnection implements java.io.Serializable
+{
+           
     public String Host;
     
     public String Port;

@@ -4,7 +4,7 @@ package EmailReader;
  * Account data fields.
  * @author Roman Nort
  */
-public class AccountData {
+public class AccountData implements java.io.Serializable {
     
     /**
      * Current active account
