@@ -4,7 +4,6 @@
  */
 package EmailReader;
 
-import com.sun.mail.imap.IMAPMessage;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;

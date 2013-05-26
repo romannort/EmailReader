@@ -211,9 +211,9 @@ public class MainForm extends javax.swing.JFrame {
                             case 0:
                                 return DateFormatter.Format(messages[row].getReceivedDate());
                             case 1:
-                                return MessageAddressFormatter.Format(messages[row].getFrom()[0]);
+                                return MessageAddressFormatter.Format(messages[row].getFrom());
                             case 2:
-                                return MessageAddressFormatter.Format(messages[row].getRecipients(Message.RecipientType.TO)[0]);
+                                return MessageAddressFormatter.Format(messages[row].getRecipients(Message.RecipientType.TO));
                             case 3:
                                 return messages[row].getSubject();
                             default:
