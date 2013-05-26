@@ -13,16 +13,15 @@ import EmailReader.Protocol;
  */
 public class AccountDataDialog extends javax.swing.JDialog {
 
-    
     /**
      * Contains data fields for existing account
      */
     private AccountData accountData;
-    
     private boolean result = true;
-    
-    /** Edits existed account
-     * 
+
+    /**
+     * Edits existed account
+     *
      * @param accountData Existed account data object
      * @param parent Parent window for this dialog
      * @param modal Determines is window modal or not
@@ -30,85 +29,86 @@ public class AccountDataDialog extends javax.swing.JDialog {
     public AccountDataDialog(AccountData accountData, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         this.accountData = accountData;
         PopulateFields();
     }
-    
-    public boolean GetResult()
-    {
+
+    public boolean GetResult() {
         return result;
     }
-    
+
     /**
      * Default c-tor.
      */
     public AccountDataDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
         this.accountData = new AccountData();
         PopulateFields();
     }
-    
 
-    private void PopulateFields()
-    {
+    private void PopulateFields() {
         this.tbServerLogin.setText(accountData.Login);
         this.tpPassword.setText(accountData.Password);
         this.tpPasswordConfirmation.setText(accountData.PasswordConfirmation);
         this.tbSmtpHost.setText(accountData.HostOut.Host);
         this.tbSmtpPort.setText(accountData.HostOut.Port);
-        this.cbSmtpSsl.setEnabled(accountData.HostOut.Ssl);
-        
-        if (accountData.HostIn.Protocl.equals(Protocol.NONE)){
+        this.cbSmtpSsl.setSelected(accountData.HostOut.Ssl);
+
+        if (!accountData.HostIn.Protocl.equals(Protocol.NONE)) {
             Boolean isImap = false;
-            if (accountData.HostIn.Protocl.equals(Protocol.IMAP) ||
-                accountData.HostIn.Protocl.equals(Protocol.IMAPS)){
-                isImap  = true;
+            if (accountData.HostIn.Protocl.equals(Protocol.IMAP)
+                    || accountData.HostIn.Protocl.equals(Protocol.IMAPS)) {
+                isImap = true;
             }
-            this.rbImap.setEnabled(isImap);
-            this.rbPop3.setEnabled(!isImap);
-            if (isImap){
+            this.rbImap.setSelected(isImap);
+            this.rbPop3.setSelected(!isImap);
+            if (isImap) {
                 this.tbImapHost.setText(accountData.HostIn.Host);
                 this.tbImapPort.setText(accountData.HostIn.Port);
-                this.cbImapSsl.setEnabled(accountData.HostIn.Ssl);
-            }else{
+                this.cbImapSsl.setSelected(accountData.HostIn.Ssl);
+            } else {
                 this.tbPop3Host.setText(accountData.HostIn.Host);
                 this.tbPop3Port.setText(accountData.HostIn.Port);
-                this.cbPop3Ssl.setEnabled(accountData.HostIn.Ssl);
+                this.cbPop3Ssl.setSelected(accountData.HostIn.Ssl);
             }
-        }        
+        } else {
+            this.rbPop3.setSelected(true);
+//            this.tbImapHost.setText(accountData.HostIn.Host);
+//            this.tbImapPort.setText(accountData.HostIn.Port);
+//            this.cbImapSsl.setEnabled(accountData.HostIn.Ssl);
+//            this.tbPop3Host.setText(accountData.HostIn.Host);
+//            this.tbPop3Port.setText(accountData.HostIn.Port);
+//            this.cbPop3Ssl.setEnabled(accountData.HostIn.Ssl);
+        }
     }
-    
+
     /**
      * Saves user changes to accountData field.
      */
-    private void SaveChanges()
-    {
+    private void SaveChanges() {
         accountData.Login = this.tbServerLogin.getText();
         accountData.Password = this.tpPassword.getPassword().toString();
         accountData.PasswordConfirmation = this.tpPasswordConfirmation.getPassword().toString();
         accountData.HostOut.Host = this.tbSmtpHost.getText();
         accountData.HostOut.Port = this.tbSmtpPort.getText();
-        accountData.HostOut.Ssl = this.cbSmtpSsl.isEnabled();
-        
-        if (this.rbImap.isEnabled())
-        {
+        accountData.HostOut.Ssl = this.cbSmtpSsl.isSelected();
+
+        if (this.rbImap.isSelected()) {
             accountData.HostIn.Protocl = Protocol.IMAP;
             accountData.HostIn.Host = this.tbImapHost.getText();
             accountData.HostIn.Port = this.tbImapPort.getText();
-            accountData.HostIn.Ssl = this.cbImapSsl.isEnabled();
-        }
-        else
-        {
+            accountData.HostIn.Ssl = this.cbImapSsl.isSelected();
+        } else {
             accountData.HostIn.Protocl = Protocol.POP3;
             accountData.HostIn.Host = this.tbPop3Host.getText();
             accountData.HostIn.Port = this.tbPop3Port.getText();
-            accountData.HostIn.Ssl = this.cbPop3Ssl.isEnabled();
+            accountData.HostIn.Ssl = this.cbPop3Ssl.isSelected();
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialise the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -189,6 +189,7 @@ public class AccountDataDialog extends javax.swing.JDialog {
         cbImapSsl.setText("SSL");
 
         grpInProtocol.add(rbPop3);
+        rbPop3.setSelected(true);
         rbPop3.setText("POP3");
 
         grpInProtocol.add(rbImap);

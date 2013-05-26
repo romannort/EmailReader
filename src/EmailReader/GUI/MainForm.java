@@ -4,6 +4,7 @@
  */
 package EmailReader.GUI;
 
+import EmailReader.AccountData;
 import EmailReader.Commands.ICommand;
 import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.MessagesProvider;
@@ -25,6 +26,7 @@ public class MainForm extends javax.swing.JFrame {
      */
     public MainForm() {
         initComponents();
+        UpdateView();
     }
 
     /**
@@ -133,16 +135,25 @@ public class MainForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mtAccountsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtAccountsActionPerformed
-        // TODO add your handling code here:
-        ICommand accountSettings = new ShowAccountsListCommand();
-        accountSettings.Execute();
+        EditAccounts();
     }//GEN-LAST:event_mtAccountsActionPerformed
 
+    private void EditAccounts()
+    {
+        ICommand accountSettings = new ShowAccountsListCommand();
+        accountSettings.Execute();
+    }
+    
     private void mtRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtRefreshActionPerformed
         // TODO add your handling code here:
+        UpdateView();
     }//GEN-LAST:event_mtRefreshActionPerformed
 
     private void UpdateView() {
+        
+        if (AccountData.ActiveAccount == null){
+            EditAccounts();
+        }
         MessagesProvider provider = new MessagesProvider();
         messages = provider.GetMessages();
         TableModel tabModel = new AbstractTableModel() {

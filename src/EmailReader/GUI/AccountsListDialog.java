@@ -127,6 +127,11 @@ public class AccountsListDialog extends javax.swing.JDialog {
 
         btnActive.setText("Active");
         btnActive.setEnabled(false);
+        btnActive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActiveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -239,6 +244,10 @@ public class AccountsListDialog extends javax.swing.JDialog {
         result = false;
         this.dispose();        
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActiveActionPerformed
+        AccountData.ActiveAccount = (AccountData)lstAccounts.getSelectedValue();
+    }//GEN-LAST:event_btnActiveActionPerformed
 
     /**
      * @param args the command line arguments
