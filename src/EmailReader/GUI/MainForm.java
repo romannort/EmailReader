@@ -10,8 +10,14 @@ import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.DateFormatter;
 import EmailReader.MessageAddressFormatter;
 import EmailReader.MessagesProvider;
+import java.util.ArrayList;
+import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -24,6 +30,8 @@ public class MainForm extends javax.swing.JFrame {
     private Message[] messages;
     //private List<MessageView> messages;
     private MessagesProvider provider;
+    
+    private List<Message> selectedMessages;
 
     /**
      * Creates new form MainForm
@@ -35,6 +43,31 @@ public class MainForm extends javax.swing.JFrame {
         provider = new MessagesProvider();
         //messages = new ArrayList<MessageView>();
         UpdateView();
+
+        tabMessages.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+                int firstIndex = e.getFirstIndex();
+                int lastIndex = e.getLastIndex();
+                boolean isAdjusting = e.getValueIsAdjusting();
+                if (lsm.isSelectionEmpty()) {
+                    // ToggleBurrons()
+                    selectedMessages = null;
+                } else {
+                    selectedMessages = new ArrayList<>();
+                    // Find out which indexes are selected.
+                    int minIndex = lsm.getMinSelectionIndex();
+                    int maxIndex = lsm.getMaxSelectionIndex();
+                    for (int i = minIndex; i <= maxIndex; i++) {
+                        if (lsm.isSelectedIndex(i)) {
+                            selectedMessages.add( messages[i] );
+                        }
+                    }
+                }
+            }
+        });
+
     }
 
     /**
@@ -50,6 +83,9 @@ public class MainForm extends javax.swing.JFrame {
         trFolders = new javax.swing.JTree();
         ScrollPaneTable = new javax.swing.JScrollPane();
         tabMessages = new javax.swing.JTable();
+        btnRead = new javax.swing.JButton();
+        btnUnread = new javax.swing.JButton();
+        btnRemove = new javax.swing.JButton();
         mbMainFormMenu = new javax.swing.JMenuBar();
         mtFile = new javax.swing.JMenu();
         mtRefresh = new javax.swing.JMenuItem();
@@ -88,8 +124,15 @@ public class MainForm extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tabMessages.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabMessages.getTableHeader().setReorderingAllowed(false);
         ScrollPaneTable.setViewportView(tabMessages);
+
+        btnRead.setText("Read");
+
+        btnUnread.setText("Unread");
+
+        btnRemove.setText("Remove");
 
         mbMainFormMenu.setName("mbMainFormMenu"); // NOI18N
 
@@ -135,16 +178,31 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(ScrollPaneTree, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRead)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUnread)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRemove)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRead)
+                    .addComponent(btnUnread)
+                    .addComponent(btnRemove))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ScrollPaneTree, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
-                    .addComponent(ScrollPaneTable))
+                    .addComponent(ScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(ScrollPaneTree, javax.swing.GroupLayout.PREFERRED_SIZE, 422, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -243,7 +301,6 @@ public class MainForm extends javax.swing.JFrame {
 //            messages.add(new MessageView(messages[i]));
 //        }
 //    }
-
     /**
      * @param args the command line arguments
      */
@@ -281,6 +338,9 @@ public class MainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ScrollPaneTable;
     private javax.swing.JScrollPane ScrollPaneTree;
+    private javax.swing.JButton btnRead;
+    private javax.swing.JButton btnRemove;
+    private javax.swing.JButton btnUnread;
     private javax.swing.JMenuBar mbMainFormMenu;
     private javax.swing.JMenuItem mtAccounts;
     private javax.swing.JMenuItem mtCloseConnection;
