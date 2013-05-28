@@ -6,6 +6,8 @@ package EmailReader.GUI;
 
 import EmailReader.AccountData;
 import EmailReader.Commands.ICommand;
+import EmailReader.Commands.MarkMessagesReadCommand;
+import EmailReader.Commands.RemoveMessagesCommand;
 import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.DateFormatter;
 import EmailReader.MessageAddressFormatter;
@@ -17,7 +19,6 @@ import javax.mail.MessagingException;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -41,18 +42,14 @@ public class MainForm extends javax.swing.JFrame {
         // We must set ActiveAccount first
         EditAccounts();
         provider = new MessagesProvider();
-        //messages = new ArrayList<MessageView>();
         UpdateView();
 
         tabMessages.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-                int firstIndex = e.getFirstIndex();
-                int lastIndex = e.getLastIndex();
-                boolean isAdjusting = e.getValueIsAdjusting();
+                boolean buttonsMode = false;
                 if (lsm.isSelectionEmpty()) {
-                    // ToggleBurrons()
                     selectedMessages = null;
                 } else {
                     selectedMessages = new ArrayList<>();
@@ -64,12 +61,25 @@ public class MainForm extends javax.swing.JFrame {
                             selectedMessages.add( messages[i] );
                         }
                     }
+                    buttonsMode = true;
                 }
+                ToggleButtons(buttonsMode);
             }
         });
 
     }
 
+    /**
+     * 
+     * @param mode 
+     */
+    private void ToggleButtons(Boolean mode)
+    {
+        this.btnRead.setEnabled(mode);
+        this.btnRemove.setEnabled(mode);
+        this.btnUnread.setEnabled(mode);
+    }
+    
     /**
      * This method is called from within the constructor to initialise the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -129,10 +139,25 @@ public class MainForm extends javax.swing.JFrame {
         ScrollPaneTable.setViewportView(tabMessages);
 
         btnRead.setText("Read");
+        btnRead.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReadActionPerformed(evt);
+            }
+        });
 
         btnUnread.setText("Unread");
+        btnUnread.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUnreadActionPerformed(evt);
+            }
+        });
 
         btnRemove.setText("Remove");
+        btnRemove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveActionPerformed(evt);
+            }
+        });
 
         mbMainFormMenu.setName("mbMainFormMenu"); // NOI18N
 
@@ -219,7 +244,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     private void mtRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mtRefreshActionPerformed
-        // TODO add your handling code here:
+
         UpdateView();
     }//GEN-LAST:event_mtRefreshActionPerformed
 
@@ -227,13 +252,27 @@ public class MainForm extends javax.swing.JFrame {
         provider.CloseConnection();
     }//GEN-LAST:event_mtCloseConnectionActionPerformed
 
+    private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadActionPerformed
+        ICommand markMessages = new MarkMessagesReadCommand(selectedMessages, true);
+        markMessages.Execute();
+    }//GEN-LAST:event_btnReadActionPerformed
+
+    private void btnUnreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnreadActionPerformed
+        ICommand markMessages = new MarkMessagesReadCommand(selectedMessages, false);
+        markMessages.Execute();
+    }//GEN-LAST:event_btnUnreadActionPerformed
+
+    private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
+        ICommand removeCommand = new RemoveMessagesCommand(selectedMessages);
+        removeCommand.Execute();
+    }//GEN-LAST:event_btnRemoveActionPerformed
+
     private void UpdateView() {
 
         if (AccountData.ActiveAccount == null) {
             EditAccounts();
         }
         messages = provider.GetMessages();
-        //GenerateViews(messages);
         TableModel tabModel = new AbstractTableModel() {
             @Override
             public String getColumnName(int col) {
@@ -295,12 +334,6 @@ public class MainForm extends javax.swing.JFrame {
         tabMessages.setModel(tabModel);
     }
 
-//    private void GenerateViews(Message[] messages) {
-//        messages = new ArrayList<>();
-//        for (int i = 0; i < messages.length; ++i) {
-//            messages.add(new MessageView(messages[i]));
-//        }
-//    }
     /**
      * @param args the command line arguments
      */
