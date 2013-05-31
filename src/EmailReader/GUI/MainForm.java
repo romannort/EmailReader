@@ -12,14 +12,21 @@ import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.DateFormatter;
 import EmailReader.MessageAddressFormatter;
 import EmailReader.MessagesProvider;
+import com.sun.mail.imap.protocol.FLAGS;
+import java.awt.Component;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 /**
@@ -29,9 +36,7 @@ import javax.swing.table.TableModel;
 public class MainForm extends javax.swing.JFrame {
 
     private Message[] messages;
-    //private List<MessageView> messages;
     private MessagesProvider provider;
-    
     private List<Message> selectedMessages;
 
     /**
@@ -42,9 +47,35 @@ public class MainForm extends javax.swing.JFrame {
         // We must set ActiveAccount first
         EditAccounts();
         provider = new MessagesProvider();
+        tabMessages.setDefaultRenderer(String.class, new DefaultTableCellRenderer(){
+            
+            public Component getTableRendererComponent(JTable table, Object color,
+                            boolean isSelected, boolean hasFocus,
+                            int row, int column) throws MessagingException{
+                
+                if ( messages[column].isSet(Flags.Flag.SEEN) ){
+                    this.setFont( getFont().deriveFont(Font.PLAIN));
+                }else{
+                    this.setFont( getFont().deriveFont(Font.BOLD));
+                }
+                
+                return this;
+            }
+        });
         UpdateView();
 
+        tabMessages.prepareRenderer(new TableCellRenderer() {
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
+            boolean hasFocus, int row, int column) {
+                return null;
+                
+            }
+        }, WIDTH, WIDTH);
+        
         tabMessages.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 ListSelectionModel lsm = (ListSelectionModel) e.getSource();
@@ -58,7 +89,7 @@ public class MainForm extends javax.swing.JFrame {
                     int maxIndex = lsm.getMaxSelectionIndex();
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
-                            selectedMessages.add( messages[i] );
+                            selectedMessages.add(messages[i]);
                         }
                     }
                     buttonsMode = true;
@@ -70,16 +101,15 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     /**
-     * 
-     * @param mode 
+     *
+     * @param mode
      */
-    private void ToggleButtons(Boolean mode)
-    {
+    private void ToggleButtons(Boolean mode) {
         this.btnRead.setEnabled(mode);
         this.btnRemove.setEnabled(mode);
         this.btnUnread.setEnabled(mode);
     }
-    
+
     /**
      * This method is called from within the constructor to initialise the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -92,7 +122,8 @@ public class MainForm extends javax.swing.JFrame {
         ScrollPaneTree = new javax.swing.JScrollPane();
         trFolders = new javax.swing.JTree();
         ScrollPaneTable = new javax.swing.JScrollPane();
-        tabMessages = new javax.swing.JTable();
+        tabMessages = new javax.swing.JTable()
+        ;
         btnRead = new javax.swing.JButton();
         btnUnread = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
@@ -108,6 +139,7 @@ public class MainForm extends javax.swing.JFrame {
 
         ScrollPaneTree.setViewportView(trFolders);
 
+        tabMessages.setAutoCreateRowSorter(true);
         tabMessages.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -363,6 +395,7 @@ public class MainForm extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new MainForm().setVisible(true);
             }

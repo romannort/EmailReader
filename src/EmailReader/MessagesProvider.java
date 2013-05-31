@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.Authenticator;
+import javax.mail.search.FlagTerm;
 
 /**
  *
@@ -63,7 +64,7 @@ public class MessagesProvider {
 
             // Open the folder
             Folder inbox = store.getFolder("INBOX");
-            Folder[] namespaces = store.getPersonalNamespaces();
+            //Folder[] namespaces = store.getPersonalNamespaces();
 
             if (inbox == null) {
                 //System.out.println("No INBOX");
@@ -71,13 +72,9 @@ public class MessagesProvider {
             }
             inbox.open(Folder.READ_WRITE);
 
-            // Get the messages from the server
-            Message[] messages = inbox.getMessages();
-            // Close the connection 
-            // but don't remove the messages from the server
-            
-            //inbox.close(false);            
-            //store.close();
+            FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+            Message messages[] = inbox.search(ft);
+            //Message[] messages = inbox.getMessages();
             
             FetchProfile fp = new FetchProfile();
             fp.add(FetchProfile.Item.ENVELOPE);
