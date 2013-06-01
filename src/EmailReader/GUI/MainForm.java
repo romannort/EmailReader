@@ -9,6 +9,7 @@ import EmailReader.Commands.ICommand;
 import EmailReader.Commands.MarkMessagesReadCommand;
 import EmailReader.Commands.RemoveMessagesCommand;
 import EmailReader.Commands.ShowAccountsListCommand;
+import EmailReader.CustomTableModel;
 import EmailReader.DateFormatter;
 import EmailReader.MessageAddressFormatter;
 import EmailReader.MessagesProvider;
@@ -17,15 +18,20 @@ import java.awt.Component;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
@@ -38,6 +44,7 @@ public class MainForm extends javax.swing.JFrame {
     private Message[] messages;
     private MessagesProvider provider;
     private List<Message> selectedMessages;
+    private AbstractTableModel tabModel;
 
     /**
      * Creates new form MainForm
@@ -47,35 +54,9 @@ public class MainForm extends javax.swing.JFrame {
         // We must set ActiveAccount first
         EditAccounts();
         provider = new MessagesProvider();
-        tabMessages.setDefaultRenderer(String.class, new DefaultTableCellRenderer(){
-            
-            public Component getTableRendererComponent(JTable table, Object color,
-                            boolean isSelected, boolean hasFocus,
-                            int row, int column) throws MessagingException{
-                
-                if ( messages[column].isSet(Flags.Flag.SEEN) ){
-                    this.setFont( getFont().deriveFont(Font.PLAIN));
-                }else{
-                    this.setFont( getFont().deriveFont(Font.BOLD));
-                }
-                
-                return this;
-            }
-        });
         UpdateView();
 
-        tabMessages.prepareRenderer(new TableCellRenderer() {
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, 
-            boolean hasFocus, int row, int column) {
-                return null;
-                
-            }
-        }, WIDTH, WIDTH);
-        
         tabMessages.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 ListSelectionModel lsm = (ListSelectionModel) e.getSource();
@@ -139,6 +120,27 @@ public class MainForm extends javax.swing.JFrame {
 
         ScrollPaneTree.setViewportView(trFolders);
 
+        tabMessages.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object color,
+                boolean isSelected, boolean hasFocus,
+                int row, int column){
+                Component c = super.getTableCellRendererComponent(table, color,
+                    isSelected, hasFocus, row, column);
+                try {
+                    if ( messages != null && messages[column].isSet(Flags.Flag.SEEN) ){
+                        c.setFont( c.getFont().deriveFont(Font.PLAIN));
+                    }else{
+                        c.setFont( c.getFont().deriveFont(Font.BOLD));
+                    }
+
+                } catch (MessagingException ex) {
+                    Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return this;
+            }
+        });
         tabMessages.setAutoCreateRowSorter(true);
         tabMessages.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -287,16 +289,41 @@ public class MainForm extends javax.swing.JFrame {
     private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadActionPerformed
         ICommand markMessages = new MarkMessagesReadCommand(selectedMessages, true);
         markMessages.Execute();
+        UpdateView();
+
     }//GEN-LAST:event_btnReadActionPerformed
 
     private void btnUnreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnreadActionPerformed
         ICommand markMessages = new MarkMessagesReadCommand(selectedMessages, false);
         markMessages.Execute();
+        UpdateView();
     }//GEN-LAST:event_btnUnreadActionPerformed
 
+    private void UpdateMessages(){
+        SwingWorker<Message[], Message[]> worker = new SwingWorker<Message[], Message[]>() {
+            
+            @Override
+            protected Message[] doInBackground() {
+                Message[] localMessages = provider.GetMessages();
+                publish(localMessages);
+                messages = localMessages;
+                return localMessages;
+            }
+
+            @Override
+            protected void process(List rowsList) {
+                if (rowsList.size() > 0) {
+                    tabMessages.setModel( new CustomTableModel(rowsList));
+                }
+            }
+        };
+        worker.execute();
+    }
+    
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         ICommand removeCommand = new RemoveMessagesCommand(selectedMessages);
         removeCommand.Execute();
+        UpdateView();
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void UpdateView() {
@@ -304,66 +331,10 @@ public class MainForm extends javax.swing.JFrame {
         if (AccountData.ActiveAccount == null) {
             EditAccounts();
         }
-        messages = provider.GetMessages();
-        TableModel tabModel = new AbstractTableModel() {
-            @Override
-            public String getColumnName(int col) {
-                switch (col) {
-                    case 0:
-                        return "Date";
-                    case 1:
-                        return "From";
-                    case 2:
-                        return "To";
-                    case 3:
-                        return "Subject";
-                    default:
-                        return "";
-                }
-            }
-
-            @Override
-            public int getRowCount() {
-                return messages.length;
-            }
-
-            @Override
-            public int getColumnCount() {
-                return 4;
-            }
-
-            @Override
-            public Object getValueAt(int row, int col) {
-                try {
-                    if (row >= 0 && row < getRowCount()) {
-                        switch (col) {
-                            case 0:
-                                return DateFormatter.Format(messages[row].getReceivedDate());
-                            case 1:
-                                return MessageAddressFormatter.Format(messages[row].getFrom());
-                            case 2:
-                                return MessageAddressFormatter.Format(messages[row].getRecipients(Message.RecipientType.TO));
-                            case 3:
-                                return messages[row].getSubject();
-                            default:
-                                return "";
-                        }
-                    }
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-
-            /**
-             * All cells are immutable.
-             */
-            @Override
-            public boolean isCellEditable(int row, int col) {
-                return false;
-            }
-        };
-        tabMessages.setModel(tabModel);
+        UpdateMessages();
+        //messages = provider.GetMessages();
+        //tabModel = new CustomTableModel(messages);
+        //tabMessages.setModel(tabModel);
     }
 
     /**
