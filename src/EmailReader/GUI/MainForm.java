@@ -10,30 +10,16 @@ import EmailReader.Commands.MarkMessagesReadCommand;
 import EmailReader.Commands.RemoveMessagesCommand;
 import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.CustomTableModel;
-import EmailReader.DateFormatter;
-import EmailReader.MessageAddressFormatter;
+import EmailReader.CustomTableRenderer;
 import EmailReader.MessagesProvider;
-import com.sun.mail.imap.protocol.FLAGS;
-import java.awt.Component;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.mail.Flags;
 import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 
 /**
  *
@@ -44,7 +30,6 @@ public class MainForm extends javax.swing.JFrame {
     private Message[] messages;
     private MessagesProvider provider;
     private List<Message> selectedMessages;
-    private AbstractTableModel tabModel;
 
     /**
      * Creates new form MainForm
@@ -120,27 +105,7 @@ public class MainForm extends javax.swing.JFrame {
 
         ScrollPaneTree.setViewportView(trFolders);
 
-        tabMessages.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object color,
-                boolean isSelected, boolean hasFocus,
-                int row, int column){
-                Component c = super.getTableCellRendererComponent(table, color,
-                    isSelected, hasFocus, row, column);
-                try {
-                    if ( messages != null && messages[column].isSet(Flags.Flag.SEEN) ){
-                        c.setFont( c.getFont().deriveFont(Font.PLAIN));
-                    }else{
-                        c.setFont( c.getFont().deriveFont(Font.BOLD));
-                    }
-
-                } catch (MessagingException ex) {
-                    Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return this;
-            }
-        });
+        tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(messages));
         tabMessages.setAutoCreateRowSorter(true);
         tabMessages.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -290,7 +255,6 @@ public class MainForm extends javax.swing.JFrame {
         ICommand markMessages = new MarkMessagesReadCommand(selectedMessages, true);
         markMessages.Execute();
         UpdateView();
-
     }//GEN-LAST:event_btnReadActionPerformed
 
     private void btnUnreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnreadActionPerformed
@@ -332,9 +296,6 @@ public class MainForm extends javax.swing.JFrame {
             EditAccounts();
         }
         UpdateMessages();
-        //messages = provider.GetMessages();
-        //tabModel = new CustomTableModel(messages);
-        //tabMessages.setModel(tabModel);
     }
 
     /**

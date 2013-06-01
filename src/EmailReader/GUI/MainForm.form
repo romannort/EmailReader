@@ -154,7 +154,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()&#xa;"/>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tabMessages.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){&#xa;            &#xa;            @Override&#xa;            public Component getTableCellRendererComponent(JTable table, Object color,&#xa;                            boolean isSelected, boolean hasFocus,&#xa;                            int row, int column){&#xa;                Component c = super.getTableCellRendererComponent(table, color,&#xa;               isSelected, hasFocus, row, column);&#xa;                try {&#xa;                    if ( messages != null &amp;&amp; messages[column].isSet(Flags.Flag.SEEN) ){&#xa;                        c.setFont( c.getFont().deriveFont(Font.PLAIN));&#xa;                    }else{&#xa;                        c.setFont( c.getFont().deriveFont(Font.BOLD));&#xa;                    }&#xa;                    &#xa;                } catch (MessagingException ex) {&#xa;                    Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);&#xa;                }&#xa;                return this;&#xa;            }&#xa;        });"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(messages));"/>
           </AuxValues>
         </Component>
       </SubComponents>

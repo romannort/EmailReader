@@ -4,8 +4,15 @@
  */
 package EmailReader;
 
+import EmailReader.GUI.MainForm;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Flags;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -13,32 +20,31 @@ import javax.swing.table.DefaultTableCellRenderer;
  *
  * @author r.ilyenko
  */
-public class CustomTableRenderer extends DefaultTableCellRenderer{
+public class CustomTableRenderer extends DefaultTableCellRenderer {
+
+    private Message[] messages;
     
-    private static final long serialVersionUID = 1L;
+    
+    public CustomTableRenderer(Message[] messages){
+        this.messages = messages;
+    }
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object color,
+            boolean isSelected, boolean hasFocus,
+            int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, color,
+                isSelected, hasFocus, row, column);
+        try {
+            if (messages != null && messages[column].isSet(Flags.Flag.SEEN)) {
+                c.setFont(c.getFont().deriveFont(Font.PLAIN));
+            } else {
+                c.setFont(c.getFont().deriveFont(Font.BOLD));
+            }
 
-   @Override 
-   public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int col) {
-
-      Component c = super.getTableCellRendererComponent(table, value,
-               isSelected, hasFocus, row, col);
-      Object valueAt = table.getModel().getValueAt(row, col);
-      String s = "";
-      if (valueAt != null) {
-         s = valueAt.toString();
-      }
-
-      if (s.equalsIgnoreCase("yellow")) {
-         c.setForeground(Color.YELLOW);
-         c.setBackground(Color.gray);
-      } else {
-         c.setForeground(Color.black);
-         c.setBackground(Color.WHITE);
-      }
-
-      return c;
-   }
+        } catch (MessagingException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
+    }
 }
-
-
