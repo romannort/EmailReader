@@ -4,7 +4,6 @@ import EmailReader.MessageAddressFormatter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -45,46 +44,24 @@ public class MessageContentDialog extends javax.swing.JDialog {
         initComponents();
     }
 
-    private String getTo() {
-        return To;
-    }
-
-    private String getFrom() {
-        return From;
-    }
-
-    private String getSubject() {
-        return Subject;
-    }
-
-    private String getContent() {
-        return Content;
-    }
 
     private void PopulateFields() {
         try {
-//            To = MessageAddressFormatter.FormatAll(message.getRecipients(Message.RecipientType.TO));
-//            From = (MessageAddressFormatter.FormatAll(message.getFrom()));
-//            Subject = (message.getSubject());
-//            Content = (ParseMessageContent());
 
             this.tbTO.setText( MessageAddressFormatter.FormatAll(message.getRecipients(Message.RecipientType.TO)));
             this.tbFrom.setText(MessageAddressFormatter.FormatAll(message.getFrom()));
             this.tbSubject.setText(message.getSubject());
-            //this.txtContent.setContentType("text/plain");
             txtContent.setText(ParseMessageContent());
-
-            this.repaint();
-            this.tbFrom.repaint();
-            this.tbTO.repaint();
-            this.tbSubject.repaint();
-            this.txtContent.repaint();
             
         } catch (MessagingException ex) {
             Logger.getLogger(MessageContentDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     private String ParseMessageContent() {
         String result = "";
         try {
@@ -97,9 +74,17 @@ public class MessageContentDialog extends javax.swing.JDialog {
         return result;
     }
 
+    /**
+     * 
+     * @param part
+     * @param level
+     * @return
+     * @throws MessagingException
+     * @throws IOException 
+     */
     private String ParsePart(Part part, Integer level) throws MessagingException, IOException {
 
-        if (part.isMimeType("text/plain")) {
+        if (part.isMimeType("text/*")) {
             return (String) part.getContent();
         } else if (part.isMimeType("multipart/*")) {
             
@@ -138,16 +123,23 @@ public class MessageContentDialog extends javax.swing.JDialog {
         lblFrom = new javax.swing.JLabel();
         tbSubject = new javax.swing.JTextField();
         lblSubject = new javax.swing.JLabel();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(550, 400));
 
+        txtContent.setEditable(false);
         txtContent.setContentType("text/html"); // NOI18N
         jScrollPane1.setViewportView(txtContent);
 
+        tbTO.setEditable(false);
+
         lblTO.setText("To");
 
+        tbFrom.setEditable(false);
+
         lblFrom.setText("From");
+
+        tbSubject.setEditable(false);
 
         lblSubject.setText("Subject");
 
@@ -158,19 +150,17 @@ public class MessageContentDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblTO)
                             .addComponent(lblFrom)
                             .addComponent(lblSubject, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tbTO, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(tbFrom, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(tbSubject)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 563, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(tbFrom, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(tbSubject)
+                            .addComponent(tbTO))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -188,15 +178,9 @@ public class MessageContentDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblSubject))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(112, 112, 112)
-                        .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, 11, Short.MAX_VALUE)
-                        .addGap(153, 153, 153))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1)
-                        .addContainerGap())))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -245,7 +229,6 @@ public class MessageContentDialog extends javax.swing.JDialog {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.Box.Filler filler1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblSubject;

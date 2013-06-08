@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader.GUI;
 
 import EmailReader.AccountData;
@@ -15,12 +11,10 @@ import EmailReader.CustomTableRenderer;
 import EmailReader.MessagesProvider;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.mail.Message;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
@@ -327,8 +321,9 @@ public class MainForm extends javax.swing.JFrame {
 
     private void tabMessagesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabMessagesMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2) {
-            int index = tabMessages.getSelectedRow();
-            ShowMessageContent(index);
+            int viewindex = tabMessages.getSelectedRow();
+            int modelindex = tabMessages.convertRowIndexToModel(viewindex);
+            ShowMessageContent(messages[modelindex]);
         }
     }//GEN-LAST:event_tabMessagesMouseClicked
 
@@ -338,16 +333,15 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewMessageActionPerformed
 
     /**
-     * 
-     * @param index 
+     *
+     * @param index
      */
-    private void ShowMessageContent(int index)
-    {
-        Message m = messages[index];
+    private void ShowMessageContent(Message m) {
+
         MessageContentDialog mdialog = new MessageContentDialog(m, this, true);
         mdialog.setVisible(true);
     }
-    
+
     private void UpdateView() {
 
         if (AccountData.ActiveAccount == null) {

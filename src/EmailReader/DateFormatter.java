@@ -1,10 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -13,11 +9,19 @@ import java.util.Date;
  */
 public class DateFormatter {
 
-    private static DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT);
+    /**
+     * 
+     */
+    private static SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd");
     
+    /**
+     * 
+     * @param date
+     * @return 
+     */
     public static String Format(Date date) {
         String dateOut;
-        dateOut = dateFormatter.format(date);
+        dateOut = simpleFormat.format(date);
         return dateOut;
     }
 }

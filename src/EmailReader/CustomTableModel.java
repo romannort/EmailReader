@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader;
 
 import java.util.List;
@@ -11,19 +7,17 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  *
- * @author r.ilyenko
+ * @author Roman Nort
  */
 public class CustomTableModel extends AbstractTableModel {
 
-    private Message[] messages;
+    public Message[] messages;
     private String[] columnHeadrs = {"Date", "From", "To", "Subject"};
 
-    
-       
-    public CustomTableModel(List<Message[]> messages){
+    public CustomTableModel(List<Message[]> messages) {
         this.messages = messages.get(0);
     }
-    
+
     @Override
     public String getColumnName(int col) {
         return columnHeadrs[col];
