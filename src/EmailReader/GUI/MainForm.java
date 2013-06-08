@@ -7,6 +7,7 @@ package EmailReader.GUI;
 import EmailReader.AccountData;
 import EmailReader.Commands.ICommand;
 import EmailReader.Commands.MarkMessagesReadCommand;
+import EmailReader.Commands.NewMessageCommand;
 import EmailReader.Commands.RemoveMessagesCommand;
 import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.CustomTableModel;
@@ -99,6 +100,7 @@ public class MainForm extends javax.swing.JFrame {
         btnRead = new javax.swing.JButton();
         btnUnread = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
+        btnNewMessage = new javax.swing.JButton();
         mbMainFormMenu = new javax.swing.JMenuBar();
         mtFile = new javax.swing.JMenu();
         mtRefresh = new javax.swing.JMenuItem();
@@ -169,6 +171,13 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        btnNewMessage.setText("New message");
+        btnNewMessage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewMessageActionPerformed(evt);
+            }
+        });
+
         mbMainFormMenu.setName("mbMainFormMenu"); // NOI18N
 
         mtFile.setText("File");
@@ -211,7 +220,9 @@ public class MainForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(ScrollPaneTree, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(ScrollPaneTree, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+                    .addComponent(btnNewMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -227,18 +238,16 @@ public class MainForm extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRead)
+                    .addComponent(btnUnread)
+                    .addComponent(btnRemove)
+                    .addComponent(btnNewMessage))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnRead)
-                            .addComponent(btnUnread)
-                            .addComponent(btnRemove))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ScrollPaneTree)))
+                    .addComponent(ScrollPaneTree)
+                    .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -323,6 +332,11 @@ public class MainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tabMessagesMouseClicked
 
+    private void btnNewMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewMessageActionPerformed
+        ICommand command = new NewMessageCommand();
+        command.Execute();
+    }//GEN-LAST:event_btnNewMessageActionPerformed
+
     /**
      * 
      * @param index 
@@ -380,6 +394,7 @@ public class MainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ScrollPaneTable;
     private javax.swing.JScrollPane ScrollPaneTree;
+    private javax.swing.JButton btnNewMessage;
     private javax.swing.JButton btnRead;
     private javax.swing.JButton btnRemove;
     private javax.swing.JButton btnUnread;

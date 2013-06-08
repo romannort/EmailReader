@@ -56,11 +56,14 @@ public class NewMessageData {
      * @throws AddressException
      */
     private InternetAddress[] ToAddresses(String s) throws AddressException {
-        String[] array = StringToArray(s);
-        InternetAddress[] addresses = new InternetAddress[array.length];
-        for (int i = 0; i < array.length; ++i) {
-            addresses[i] = new InternetAddress(array[i]);
+        if (s != null && !s.isEmpty()) {
+            String[] array = StringToArray(s);
+            InternetAddress[] addresses = new InternetAddress[array.length];
+            for (int i = 0; i < array.length; ++i) {
+                addresses[i] = new InternetAddress(array[i]);
+            }
+            return addresses;
         }
-        return addresses;
+        return new InternetAddress[0];
     }
 }

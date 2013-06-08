@@ -1,14 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader;
 
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.*;
-import javax.mail.Authenticator;
 
 /**
  *
@@ -19,7 +13,7 @@ public class MessagesProvider {
     private AccountData account;
     private Folder currentFolder;
     private Store currentStore;
-
+    
     /**
      *
      */
@@ -34,27 +28,11 @@ public class MessagesProvider {
      */
     public Message[] GetMessages() {
 
-        Authenticator auth = new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(account.Login, account.Password);
-            }
-        };
-
-        Properties props = new Properties();
         String protocol = account.HostIn.Protocl;
-        props.put("mail." + protocol + ".host", account.HostIn.Host);
-        props.put("mail." + protocol + ".user", account.Login);
-        props.put("mail.store.protocol", protocol);
-        props.put("mail." + protocol + ".auth", "true");
-        props.put("mail." + protocol + ".socketFactory", account.HostIn.Port);
-        props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail." + protocol + ".port", account.HostIn.Port);
-
         try {
 
             // Connect to the server
-            Session session = Session.getDefaultInstance(props, auth);
+            Session session = SessionProviderSingleton.GetSession();
             Store store = session.getStore(protocol);
             store.connect();
 
