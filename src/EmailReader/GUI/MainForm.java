@@ -12,14 +12,19 @@ import EmailReader.Commands.ShowAccountsListCommand;
 import EmailReader.CustomTableModel;
 import EmailReader.CustomTableRenderer;
 import EmailReader.MessagesProvider;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.mail.Message;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 
 /**
  *
@@ -64,6 +69,7 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
+        RunUpdateDaemon();
     }
 
     /**
@@ -135,6 +141,11 @@ public class MainForm extends javax.swing.JFrame {
         });
         tabMessages.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabMessages.getTableHeader().setReorderingAllowed(false);
+        tabMessages.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabMessagesMouseClicked(evt);
+            }
+        });
         ScrollPaneTable.setViewportView(tabMessages);
 
         btnRead.setText("Read");
@@ -263,9 +274,8 @@ public class MainForm extends javax.swing.JFrame {
         UpdateView();
     }//GEN-LAST:event_btnUnreadActionPerformed
 
-    private void UpdateMessages(){
+    private void UpdateMessages() {
         SwingWorker<Message[], Message[]> worker = new SwingWorker<Message[], Message[]>() {
-            
             @Override
             protected Message[] doInBackground() {
                 Message[] localMessages = provider.GetMessages();
@@ -277,19 +287,52 @@ public class MainForm extends javax.swing.JFrame {
             @Override
             protected void process(List rowsList) {
                 if (rowsList.size() > 0) {
-                    tabMessages.setModel( new CustomTableModel(rowsList));
+                    tabMessages.setModel(new CustomTableModel(rowsList));
                 }
             }
         };
         worker.execute();
     }
-    
+
+    /**
+     *
+     */
+    private void RunUpdateDaemon() {
+        Timer timer = new Timer(0, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UpdateMessages();
+            }
+        });
+        int updateTime = 60000; // one minute;
+        timer.setDelay(updateTime);
+        timer.start();
+    }
+
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         ICommand removeCommand = new RemoveMessagesCommand(selectedMessages);
         removeCommand.Execute();
         UpdateView();
     }//GEN-LAST:event_btnRemoveActionPerformed
 
+    private void tabMessagesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabMessagesMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2) {
+            int index = tabMessages.getSelectedRow();
+            ShowMessageContent(index);
+        }
+    }//GEN-LAST:event_tabMessagesMouseClicked
+
+    /**
+     * 
+     * @param index 
+     */
+    private void ShowMessageContent(int index)
+    {
+        Message m = messages[index];
+        MessageContentDialog mdialog = new MessageContentDialog(m, this, true);
+        mdialog.setVisible(true);
+    }
+    
     private void UpdateView() {
 
         if (AccountData.ActiveAccount == null) {

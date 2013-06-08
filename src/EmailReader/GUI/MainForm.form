@@ -152,6 +152,9 @@
               <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tabMessagesMouseClicked"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()&#xa;"/>
             <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(messages));"/>

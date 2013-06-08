@@ -20,20 +20,16 @@ import javax.mail.search.FlagTerm;
 public class MessagesProvider {
 
     private AccountData account;
-
     private Folder currentFolder;
-    
     private Store currentStore;
-    
+
     /**
      *
      */
-    public MessagesProvider()
-    {
+    public MessagesProvider() {
         account = AccountData.ActiveAccount;
     }
-    
-    
+
     // protocol://username:password@host/foldername
     public Message[] GetMessages() {
 
@@ -64,26 +60,22 @@ public class MessagesProvider {
 
             // Open the folder
             Folder inbox = store.getFolder("INBOX");
-            //Folder[] namespaces = store.getPersonalNamespaces();
 
             if (inbox == null) {
-                //System.out.println("No INBOX");
                 System.exit(1);
             }
             inbox.open(Folder.READ_WRITE);
 
-            FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-            Message messages[] = inbox.search(ft);
-            //Message[] messages = inbox.getMessages();
             
-            FetchProfile fp = new FetchProfile();
-            fp.add(FetchProfile.Item.ENVELOPE);
-            fp.add("X-mailer");
+            //FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+            //Message messages[] = inbox.search(ft);
+            Message messages[] = inbox.getMessages();
+            FetchProfile fp = ConfigureFetching();
             inbox.fetch(messages, fp);
-            
+
             currentFolder = inbox;
             currentStore = store;
-            
+
             return messages;
 
         } catch (Exception ex) {
@@ -92,8 +84,14 @@ public class MessagesProvider {
         return null;
     }
 
-    public void CloseConnection()
-    {
+    private FetchProfile ConfigureFetching() {
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.ENVELOPE);
+        fp.add("X-mailer");
+        return fp;
+    }
+
+    public void CloseConnection() {
         try {
             currentFolder.close(true);
             currentStore.close();
@@ -101,7 +99,7 @@ public class MessagesProvider {
             Logger.getLogger(MessagesProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private static void WorkingWithImap() {
 
         final String username = "giantrog@gmail.com";
@@ -136,11 +134,11 @@ public class MessagesProvider {
             Folder[] folders = store.getPersonalNamespaces();
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_WRITE);
-            
+
             Message[] messages = inbox.getMessages();
             for (int i = 0; i < messages.length; i++) {
                 messages[i].setFlag(Flags.Flag.SEEN, true);
-                
+
                 System.out.println("------------ Message " + (i + 1)
                         + " ------------");
                 // Here's the big change...
@@ -195,6 +193,4 @@ public class MessagesProvider {
         }
 
     }
-    
-    
 }
