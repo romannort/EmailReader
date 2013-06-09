@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 /**
  * Account data fields.

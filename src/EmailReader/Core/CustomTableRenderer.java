@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 import EmailReader.GUI.MainForm;
 import java.awt.Color;

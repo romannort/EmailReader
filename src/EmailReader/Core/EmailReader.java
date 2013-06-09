@@ -1,8 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package EmailReader;
+package EmailReader.Core;
 
 import EmailReader.GUI.MainForm;
 
@@ -13,15 +9,20 @@ import EmailReader.GUI.MainForm;
 public class EmailReader 
 {
     
-    
+    /**
+     * 
+     * @param args 
+     */
     public static void main(String[] args)
     {
         ShowForm();
     }
     
+    /**
+     * 
+     */
     private static void ShowForm()
     {
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater( new Runnable() 
         {
             @Override

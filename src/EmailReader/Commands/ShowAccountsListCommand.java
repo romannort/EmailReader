@@ -4,7 +4,7 @@
  */
 package EmailReader.Commands;
 
-import EmailReader.AccountData;
+import EmailReader.Core.AccountData;
 import EmailReader.GUI.AccountsListDialog;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,19 +24,19 @@ public class ShowAccountsListCommand implements ICommand {
     private List<AccountData> accounts;
     private static String fileName = "accounts.dat";
     private static boolean firstRun = true;
-    
+
     @Override
     public Boolean Execute() {
 
-        
+
         ReadAccounts();
-        
+
         AccountsListDialog accountsDialog = new AccountsListDialog(accounts, null, true);
         accountsDialog.setVisible(true);
         if (accountsDialog.getResult()) {
             result = true;
             accounts = accountsDialog.GetAccounts();
-            if (AccountData.ActiveAccount == null && accounts.size() == 1){
+            if (AccountData.ActiveAccount == null && accounts.size() == 1) {
                 AccountData.ActiveAccount = accounts.get(0);
             }
             WriteAccounts();
@@ -45,8 +45,7 @@ public class ShowAccountsListCommand implements ICommand {
         return result;
     }
 
-    private void ReadAccounts() 
-    {
+    private void ReadAccounts() {
         try {
             FileInputStream fileIn =
                     new FileInputStream(fileName);
@@ -58,7 +57,12 @@ public class ShowAccountsListCommand implements ICommand {
             i.printStackTrace();
         } catch (ClassNotFoundException c) {
             c.printStackTrace();
+        } finally {
+            if (accounts == null){
+                accounts = new ArrayList<>();
+            }
         }
+
     }
 
     private boolean WriteAccounts() {

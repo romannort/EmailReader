@@ -4,7 +4,7 @@
  */
 package EmailReader.GUI;
 
-import EmailReader.NewMessageData;
+import EmailReader.Core.NewMessageData;
 
 /**
  *

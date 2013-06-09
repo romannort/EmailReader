@@ -1,14 +1,14 @@
 package EmailReader.GUI;
 
-import EmailReader.AccountData;
+import EmailReader.Core.AccountData;
 import EmailReader.Commands.ICommand;
 import EmailReader.Commands.MarkMessagesReadCommand;
 import EmailReader.Commands.NewMessageCommand;
 import EmailReader.Commands.RemoveMessagesCommand;
 import EmailReader.Commands.ShowAccountsListCommand;
-import EmailReader.CustomTableModel;
-import EmailReader.CustomTableRenderer;
-import EmailReader.MessagesProvider;
+import EmailReader.Core.CustomTableModel;
+import EmailReader.Core.CustomTableRenderer;
+import EmailReader.Core.MessagesProvider;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;

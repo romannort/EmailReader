@@ -1,6 +1,6 @@
 package EmailReader.GUI;
 
-import EmailReader.MessageAddressFormatter;
+import EmailReader.Core.MessageAddressFormatter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

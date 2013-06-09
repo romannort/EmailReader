@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

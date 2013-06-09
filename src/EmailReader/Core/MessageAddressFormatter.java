@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;

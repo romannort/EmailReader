@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package EmailReader;
+package EmailReader.Core;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;

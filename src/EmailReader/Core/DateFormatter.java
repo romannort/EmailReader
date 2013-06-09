@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

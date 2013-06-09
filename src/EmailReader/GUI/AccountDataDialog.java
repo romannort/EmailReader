@@ -4,8 +4,8 @@
  */
 package EmailReader.GUI;
 
-import EmailReader.AccountData;
-import EmailReader.Protocol;
+import EmailReader.Core.AccountData;
+import EmailReader.Core.Protocol;
 
 /**
  *

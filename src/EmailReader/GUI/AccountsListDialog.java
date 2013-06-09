@@ -4,7 +4,7 @@
  */
 package EmailReader.GUI;
 
-import EmailReader.AccountData;
+import EmailReader.Core.AccountData;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.Arrays;

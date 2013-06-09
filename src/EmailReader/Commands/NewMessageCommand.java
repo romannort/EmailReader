@@ -1,8 +1,8 @@
 package EmailReader.Commands;
 
 import EmailReader.GUI.NewMessageDialog;
-import EmailReader.NewMessageData;
-import EmailReader.SessionProviderSingleton;
+import EmailReader.Core.NewMessageData;
+import EmailReader.Core.SessionProviderSingleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;

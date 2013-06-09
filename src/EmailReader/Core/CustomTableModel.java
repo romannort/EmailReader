@@ -1,4 +1,4 @@
-package EmailReader;
+package EmailReader.Core;
 
 import java.util.List;
 import javax.mail.Message;
