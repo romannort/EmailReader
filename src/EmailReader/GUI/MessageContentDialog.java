@@ -17,11 +17,7 @@ import javax.mail.Part;
 public class MessageContentDialog extends javax.swing.JDialog {
 
     private Message message;
-    private String To = "";
-    private String From = "";
-    private String Subject = "";
-    private String Content = "";
-
+    
     /**
      *
      * @param message

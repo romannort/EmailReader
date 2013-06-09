@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader;
 
 import javax.mail.Address;
@@ -14,6 +10,11 @@ import javax.mail.internet.NewsAddress;
  */
 public class MessageAddressFormatter {
 
+    /**
+     * 
+     * @param ads
+     * @return 
+     */
     public static String Format(Address[] ads) {
 
         String result = "";
@@ -23,6 +24,11 @@ public class MessageAddressFormatter {
         return result;
     }
 
+    /**
+     * 
+     * @param ads
+     * @return 
+     */
     public static String ParseSingleAddress(Address ads) {
         String result = "";
         if (ads != null) {
@@ -37,12 +43,17 @@ public class MessageAddressFormatter {
         return result;
     }
 
+    /**
+     * 
+     * @param addresses
+     * @return 
+     */
     public static String FormatAll(Address[] addresses) {
         StringBuilder sb = new StringBuilder();
         for (Address a : addresses) {
-            sb.append(ParseSingleAddress(a));
             sb.append(',');
+            sb.append(ParseSingleAddress(a));
         }
-        return sb.toString();
+        return sb.substring(1);
     }
 }

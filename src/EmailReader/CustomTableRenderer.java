@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package EmailReader;
 
 import EmailReader.GUI.MainForm;
@@ -18,17 +14,16 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
- * @author r.ilyenko
+ * @author Roman Nort
  */
 public class CustomTableRenderer extends DefaultTableCellRenderer {
 
-    private Message[] messages;
-    
-    
-    public CustomTableRenderer(Message[] messages){
-        this.messages = messages;
+    private JTable table;
+
+    public CustomTableRenderer(JTable table) {
+        this.table = table;
     }
-    
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object color,
             boolean isSelected, boolean hasFocus,
@@ -36,12 +31,19 @@ public class CustomTableRenderer extends DefaultTableCellRenderer {
         Component c = super.getTableCellRendererComponent(table, color,
                 isSelected, hasFocus, row, column);
         try {
-            if (messages != null && messages[column].isSet(Flags.Flag.SEEN)) {
-                c.setFont(c.getFont().deriveFont(Font.PLAIN));
-            } else {
-                c.setFont(c.getFont().deriveFont(Font.BOLD));
+            CustomTableModel model = (CustomTableModel) this.table.getModel();
+            Message message = (Message) model.getMessageFromRow(row);
+            int font = Font.BOLD;
+            if (message != null && message.isSet(Flags.Flag.SEEN)) {
+                font = Font.PLAIN;
             }
-
+            c.setFont(c.getFont().deriveFont(font));
+            Color bcolor = Color.WHITE;
+            if (table.getSelectedRow() == row) {
+                bcolor = Color.YELLOW;
+            }
+            c.setBackground(bcolor);
+            c.setForeground(Color.BLACK);
         } catch (MessagingException ex) {
             Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
         }

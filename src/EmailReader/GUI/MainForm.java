@@ -107,34 +107,9 @@ public class MainForm extends javax.swing.JFrame {
 
         ScrollPaneTree.setViewportView(trFolders);
 
-        tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(messages));
+        tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(tabMessages));
         tabMessages.setAutoCreateRowSorter(true);
-        tabMessages.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Time", "From", "To", "Subject"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        tabMessages.setModel(new CustomTableModel(null));
         tabMessages.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tabMessages.getTableHeader().setReorderingAllowed(false);
         tabMessages.addMouseListener(new java.awt.event.MouseAdapter() {

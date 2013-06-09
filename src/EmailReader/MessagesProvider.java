@@ -66,6 +66,7 @@ public class MessagesProvider {
     private FetchProfile ConfigureFetching() {
         FetchProfile fp = new FetchProfile();
         fp.add(FetchProfile.Item.ENVELOPE);
+        fp.add(FetchProfile.Item.FLAGS);
         fp.add("X-mailer");
         return fp;
     }

@@ -15,7 +15,12 @@ public class CustomTableModel extends AbstractTableModel {
     private String[] columnHeadrs = {"Date", "From", "To", "Subject"};
 
     public CustomTableModel(List<Message[]> messages) {
-        this.messages = messages.get(0);
+        if (messages != null) {
+            this.messages = messages.get(0);
+        } else {
+            this.messages = new Message[0];
+        }
+
     }
 
     @Override
@@ -54,6 +59,15 @@ public class CustomTableModel extends AbstractTableModel {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 
+     * @param row
+     * @return 
+     */
+    public Message getMessageFromRow(int row) {
+        return messages[row];
     }
 
     /**
