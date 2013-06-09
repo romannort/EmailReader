@@ -49,7 +49,7 @@ public class MainForm extends javax.swing.JFrame {
                 if (lsm.isSelectionEmpty()) {
                     selectedMessages = null;
                 } else {
-                    selectedMessages = new ArrayList<>();
+                    selectedMessages = new ArrayList<Message>();
                     // Find out which indexes are selected.
                     int minIndex = lsm.getMinSelectionIndex();
                     int maxIndex = lsm.getMaxSelectionIndex();
@@ -86,8 +86,6 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        ScrollPaneTree = new javax.swing.JScrollPane();
-        trFolders = new javax.swing.JTree();
         ScrollPaneTable = new javax.swing.JScrollPane();
         tabMessages = new javax.swing.JTable()
         ;
@@ -104,8 +102,6 @@ public class MainForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(795, 490));
-
-        ScrollPaneTree.setViewportView(trFolders);
 
         tabMessages.setDefaultRenderer(Object.class, new CustomTableRenderer(tabMessages));
         tabMessages.setAutoCreateRowSorter(true);
@@ -189,19 +185,17 @@ public class MainForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ScrollPaneTree, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                    .addComponent(btnNewMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(ScrollPaneTable)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnNewMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnRead)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnUnread)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRemove)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE))
+                        .addGap(0, 397, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -214,9 +208,7 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(btnRemove)
                     .addComponent(btnNewMessage))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ScrollPaneTree)
-                    .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                .addComponent(ScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -362,7 +354,6 @@ public class MainForm extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ScrollPaneTable;
-    private javax.swing.JScrollPane ScrollPaneTree;
     private javax.swing.JButton btnNewMessage;
     private javax.swing.JButton btnRead;
     private javax.swing.JButton btnRemove;
@@ -374,6 +365,5 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JMenu mtFile;
     private javax.swing.JMenuItem mtRefresh;
     private javax.swing.JTable tabMessages;
-    private javax.swing.JTree trFolders;
     // End of variables declaration//GEN-END:variables
 }

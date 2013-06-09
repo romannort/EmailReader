@@ -1,0 +1,625 @@
+package EmailReader.Core;
+
+/**
+ * Account data fields.
+ * @author Roman Nort
+ */
+public class AccountData implements java.io.Serializable {
+    
+    /**
+     * Current active account
+     */
+    public static AccountData ActiveAccount;
+    
+    public String Login;
+    
+    public String Password;
+    
+    public String PasswordConfirmation;
+    
+    public HostConnection HostIn;
+    
+    public HostConnection HostOut;
+    
+    /**
+     * Default c-tor
+     */
+    public AccountData()
+    {
+        Login = "";
+        Password = "";
+        PasswordConfirmation = "";
+        HostIn = new HostConnection();
+        HostOut = new HostConnection();
+    }
+    
+    
+    @Override
+    public String toString()
+    {
+        return this.Login;
+    }
+}
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package EmailReader.Core;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class CustomPasswordAuthenticator extends Authenticator {
+
+    /**
+     * 
+     */
+    private AccountData account;
+    
+    /**
+     * 
+     */
+    public CustomPasswordAuthenticator(){
+        account = AccountData.ActiveAccount;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(account.Login, account.Password);
+    }
+}
+package EmailReader.Core;
+
+import java.util.List;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.swing.table.AbstractTableModel;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class CustomTableModel extends AbstractTableModel {
+
+    public Message[] messages;
+    private String[] columnHeadrs = {"Date", "From", "To", "Subject"};
+
+    public CustomTableModel(List<Message[]> messages) {
+        if (messages != null) {
+            this.messages = messages.get(0);
+        } else {
+            this.messages = new Message[0];
+        }
+
+    }
+
+    @Override
+    public String getColumnName(int col) {
+        return columnHeadrs[col];
+    }
+
+    @Override
+    public int getRowCount() {
+        return messages.length;
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnHeadrs.length;
+    }
+
+    @Override
+    public Object getValueAt(int row, int col) {
+        try {
+            if (row >= 0 && row < getRowCount()) {
+                switch (col) {
+                    case 0:
+                        return DateFormatter.Format(messages[row].getReceivedDate());
+                    case 1:
+                        return MessageAddressFormatter.Format(messages[row].getFrom());
+                    case 2:
+                        return MessageAddressFormatter.Format(messages[row].getRecipients(Message.RecipientType.TO));
+                    case 3:
+                        return messages[row].getSubject();
+                    default:
+                        return "";
+                }
+            }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * 
+     * @param row
+     * @return 
+     */
+    public Message getMessageFromRow(int row) {
+        return messages[row];
+    }
+
+    /**
+     * All cells are immutable.
+     */
+    @Override
+    public boolean isCellEditable(int row, int col) {
+        return false;
+    }
+}
+package EmailReader.Core;
+
+import EmailReader.GUI.MainForm;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Flags;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class CustomTableRenderer extends DefaultTableCellRenderer {
+
+    private JTable table;
+
+    public CustomTableRenderer(JTable table) {
+        this.table = table;
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object color,
+            boolean isSelected, boolean hasFocus,
+            int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, color,
+                isSelected, hasFocus, row, column);
+        try {
+            CustomTableModel model = (CustomTableModel) this.table.getModel();
+            Message message = (Message) model.getMessageFromRow(row);
+            int font = Font.BOLD;
+            if (message != null && message.isSet(Flags.Flag.SEEN)) {
+                font = Font.PLAIN;
+            }
+            c.setFont(c.getFont().deriveFont(font));
+            Color bcolor = Color.WHITE;
+            if (table.getSelectedRow() == row) {
+                bcolor = Color.YELLOW;
+            }
+            c.setBackground(bcolor);
+            c.setForeground(Color.BLACK);
+        } catch (MessagingException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
+    }
+}
+package EmailReader.Core;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class DateFormatter {
+
+    /**
+     * 
+     */
+    private static SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
+    /**
+     * 
+     * @param date
+     * @return 
+     */
+    public static String Format(Date date) {
+        String dateOut;
+        dateOut = simpleFormat.format(date);
+        return dateOut;
+    }
+}
+package EmailReader.Core;
+
+import EmailReader.GUI.MainForm;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class EmailReader 
+{
+    
+    /**
+     * 
+     * @param args 
+     */
+    public static void main(String[] args)
+    {
+        ShowForm();
+    }
+    
+    /**
+     * 
+     */
+    private static void ShowForm()
+    {
+        java.awt.EventQueue.invokeLater( new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                new MainForm().setVisible(true);
+            }
+        });
+    }
+}
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package EmailReader.Core;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class HostConnection implements java.io.Serializable
+{
+           
+    public String Host;
+    
+    public String Port;
+    
+    public Boolean Ssl;
+    
+    public Boolean Tls;
+    
+    public String Protocl;
+    
+    
+    public HostConnection()
+    {
+        Host = "";
+        Port = "";
+        Ssl = false;
+        Tls = false;
+        Protocl = Protocol.NONE;
+    }
+}package EmailReader.Core;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.NewsAddress;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class MessageAddressFormatter {
+
+    /**
+     * 
+     * @param ads
+     * @return 
+     */
+    public static String Format(Address[] ads) {
+
+        String result = "";
+        if (ads != null && ads.length > 0) {
+            result = ParseSingleAddress(ads[0]);
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @param ads
+     * @return 
+     */
+    public static String ParseSingleAddress(Address ads) {
+        String result = "";
+        if (ads != null) {
+            if (ads instanceof InternetAddress) {
+                result = ((InternetAddress) ads).getAddress();
+            } else {
+                if (ads instanceof NewsAddress) {
+                    result = ((NewsAddress) ads).getHost();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @param addresses
+     * @return 
+     */
+    public static String FormatAll(Address[] addresses) {
+        StringBuilder sb = new StringBuilder();
+        for (Address a : addresses) {
+            sb.append(',');
+            sb.append(ParseSingleAddress(a));
+        }
+        return sb.substring(1);
+    }
+}
+package EmailReader.Core;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.*;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class MessagesProvider {
+
+    private AccountData account;
+    private Folder currentFolder;
+    private Store currentStore;
+    
+    /**
+     *
+     */
+    public MessagesProvider() {
+        account = AccountData.ActiveAccount;
+    }
+
+    // protocol://username:password@host/foldername
+    /**
+     *
+     * @return
+     */
+    public Message[] GetMessages() {
+
+        String protocol = account.HostIn.Protocl;
+        try {
+
+            // Connect to the server
+            Session session = SessionProviderSingleton.GetSession();
+            Store store = session.getStore(protocol);
+            store.connect();
+
+            // Open the folder
+            Folder inbox = store.getFolder("INBOX");
+
+            if (inbox == null) {
+                System.exit(1);
+            }
+            inbox.open(Folder.READ_WRITE);
+
+            Message messages[] = inbox.getMessages();
+            FetchProfile fp = ConfigureFetching();
+            inbox.fetch(messages, fp);
+
+            currentFolder = inbox;
+            currentStore = store;
+
+            return messages;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private FetchProfile ConfigureFetching() {
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.ENVELOPE);
+        fp.add(FetchProfile.Item.FLAGS);
+        fp.add("X-mailer");
+        return fp;
+    }
+
+    /**
+     *
+     */
+    public void CloseConnection() {
+        try {
+            currentFolder.close(true);
+            currentStore.close();
+        } catch (MessagingException ex) {
+            Logger.getLogger(MessagesProvider.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+package EmailReader.Core;
+
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class NewMessageData {
+
+    public String To;
+    public String Cc;
+    public String Bcc;
+    public String Subject;
+    public String Content;
+
+    /**
+     *
+     * @param msg
+     */
+    public void PopulateMimeMessage(MimeMessage msg) {
+        try {
+            msg.setFrom(new InternetAddress(AccountData.ActiveAccount.Login));
+            msg.setRecipients(Message.RecipientType.TO, ToAddresses(To));
+            msg.setRecipients(Message.RecipientType.CC, ToAddresses(Cc));
+            msg.setRecipients(Message.RecipientType.BCC, ToAddresses(Bcc));
+            msg.setSubject(Subject);
+            msg.setSentDate(new Date());
+            msg.setText(Content);
+        } catch (MessagingException ex) {
+            Logger.getLogger(NewMessageData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     *
+     * @param s
+     * @return
+     */
+    private String[] StringToArray(String s) {
+        String[] result = s.split("\\s*,\\s*");
+        return result;
+    }
+
+    /**
+     *
+     * @param s
+     * @return
+     * @throws AddressException
+     */
+    private InternetAddress[] ToAddresses(String s) throws AddressException {
+        if (s != null && !s.isEmpty()) {
+            String[] array = StringToArray(s);
+            InternetAddress[] addresses = new InternetAddress[array.length];
+            for (int i = 0; i < array.length; ++i) {
+                addresses[i] = new InternetAddress(array[i]);
+            }
+            return addresses;
+        }
+        return new InternetAddress[0];
+    }
+}
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package EmailReader.Core;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class Protocol implements java.io.Serializable
+{
+    public static String POP3 = "pop3";
+    
+    public static String POP3S = "pop3s";
+    
+    public static String IMAP = "imap";
+    
+    public static String IMAPS = "imaps";
+    
+    public static String SMTP = "smtp";
+    
+    public static String SMTPS = "smtps";
+    
+    /**
+     * Google IMAP. Experimental protocol in JavaMail API
+     */
+    public static String GIMAP = "gimap";
+    
+    /**
+     *  Empty protocol. =|
+     */
+    public static String NONE = "";
+}package EmailReader.Core;
+
+import java.util.Properties;
+import javax.mail.Authenticator;
+import javax.mail.Session;
+
+/**
+ *
+ * @author Roman Nort
+ */
+public class SessionProviderSingleton {
+
+    private static volatile SessionProviderSingleton instance = null;
+    private AccountData account;
+    private Properties props;
+    private Session session;
+    private Authenticator authenticator;
+
+    /**
+     * 
+     * @return 
+     */
+    public static Session GetSession() {
+        if (instance == null) {
+            synchronized (SessionProviderSingleton.class) {
+                if (instance == null) {
+                    instance = new SessionProviderSingleton();
+                }
+            }
+        }
+        return instance.GetSessionInternal();
+    }
+
+    /**
+     * 
+     */
+    private SessionProviderSingleton() {
+        account = AccountData.ActiveAccount;
+        InitialiseProperties();
+        authenticator = new CustomPasswordAuthenticator();
+        session = Session.getDefaultInstance(props, authenticator);
+    }
+
+    /**
+     * 
+     */
+    private void InitialiseProperties() {
+        props = new Properties();
+        String protocol = account.HostIn.Protocl;
+        props.put("mail." + protocol + ".host", account.HostIn.Host);
+        props.put("mail." + protocol + ".user", account.Login);
+        props.put("mail.store.protocol", protocol);
+        props.put("mail." + protocol + ".auth", "true");
+        props.put("mail." + protocol + ".socketFactory", account.HostIn.Port);
+        props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail." + protocol + ".port", account.HostIn.Port);
+
+        props.put("mail.smtp.host", account.HostOut.Host);
+        props.put("mail.smtp.socketFactory.port", account.HostOut.Port);
+        if (account.HostOut.Ssl) {
+            props.put("mail.smtp.socketFactory.class",
+                    "javax.net.ssl.SSLSocketFactory");
+        }
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", account.HostOut.Port);
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    private Session GetSessionInternal() {
+        return session;
+    }
+}

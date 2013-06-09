@@ -31,7 +31,7 @@ public class AccountsListDialog extends javax.swing.JDialog {
     public AccountsListDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        accounts = new DefaultListModel<>();
+        accounts = new DefaultListModel<AccountData>();
         this.parent = parent;
     }
 

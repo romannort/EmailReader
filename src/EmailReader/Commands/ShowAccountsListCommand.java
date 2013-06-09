@@ -59,7 +59,7 @@ public class ShowAccountsListCommand implements ICommand {
             c.printStackTrace();
         } finally {
             if (accounts == null){
-                accounts = new ArrayList<>();
+                accounts = new ArrayList<AccountData>();
             }
         }
 
